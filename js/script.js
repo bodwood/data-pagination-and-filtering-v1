@@ -3,15 +3,26 @@ Treehouse Techdegree:
 FSJS Project 2 - Data Pagination and Filtering
 */
 
+let header = document.querySelector('.header');
+let searchBar =  `<label for="search" class="student-search">
+                    <span>Search by name</span>
+                    <input id="search" placeholder="Search by name...">
+                    <button type="button" class="search-button"><img src="img/icn-search.svg" alt="Search icon"></button>
+                  </label>`;
+header.insertAdjacentHTML('beforeend', searchBar);
+
+const searchButton = document.querySelector('.search-button');
+const searchID = document.querySelector('#search');
+let studentList = document.querySelector('.student-list');
+
 /*
-* Displays a page of nine students
+* Displays a page of nine students from data list
 * @param list - represents student data
 * @param page - represents page number
 */
 function showPage(list, page){
   let startIndex = (page * 9) - 9;
   let endIndex = (page * 9);
-  let studentList = document.querySelector('.student-list');
   studentList.innerHTML = '';
   for(let i = 0; i < list.length; i++){
     if(i >= startIndex && i < endIndex){
@@ -53,6 +64,37 @@ function addPagination(list){
     }
   });
 }
+
+/*
+* Filters data to display only searched for names
+* @param name - value passed in from user. Name to search for in list
+*/
+function searchFilter(name){
+    searchButton.className = 'active';
+    let result = [];
+    for(let i = 0; i < data.length; i++){
+      const searchName = `${data[i].name.first.toLowerCase()} ${data[i].name.last.toLowerCase()}`;
+      if(searchName.includes(name.toLowerCase())){
+        result.push(data[i]);
+      }
+    }
+    if(result.length === 0){
+      const noResult = `<span class="no-results">No results found.</span>`
+      studentList.insertAdjacentHTML('beforeend', noResult);
+    }
+    return result;
+}
+
+//Event listeners added to search bar and search button
+searchButton.addEventListener('click', () => {
+  showPage(searchFilter(searchID.value), 1);
+  addPagination(searchFilter(searchID.value));
+});
+
+searchID.addEventListener('keyup', () => {
+  showPage(searchFilter(searchID.value), 1);
+  addPagination(searchFilter(searchID.value));
+});
 
 //call functions to display data
 showPage(data, 1);
